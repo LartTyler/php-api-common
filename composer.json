@@ -19,15 +19,25 @@
 		"php": ">=7.2",
 		"ext-json": "*",
 		"symfony/serializer": "^4.0|^5.0",
-		"symfony/http-foundation": "^4.0|^5.0"
+		"symfony/http-foundation": "^4.0|^5.0",
+		"symfony/contracts": "^2.0"
 	},
 	"require-dev": {
 		"symfony/validator": "^5.0",
-		"lexik/jwt-authentication-bundle": "^2.6"
+		"lexik/jwt-authentication-bundle": "^2.6",
+		"dbstudios/entity-transformers": "^1.2",
+		"dbstudios/doctrine-entities": "^1.0",
+		"doctrine/orm": "^2.7",
+		"dbstudios/doctrine-query-document": "^1.1",
+		"symfony/event-dispatcher": "^5.0"
 	},
 	"suggest": {
 		"symfony/validator": "If you want to use the ValidationFailedError API error class",
-		"dbstudios/doctrine-query-document": "If you want to use the Doctrine Query Document errors",
-		"lexik/jwt-authentication-bundle": "If you want to use the lexik/jwt-authentication-bundle support code"
+		"dbstudios/doctrine-query-document": "If you want to use the Doctrine Query Document errors or the AbstractApiController",
+		"lexik/jwt-authentication-bundle": "If you want to use the lexik/jwt-authentication-bundle support code",
+		"dbstudios/entity-transformers": "If you want to use the AbstractApiController",
+		"dbstudios/doctrine-entities": "If you want to use the AbstractApiController",
+		"doctrine/orm": "If you want to use the AbstractApiController",
+		"symfony/event-dispatcher": "If you want to use the event features of AbstractApiController"
 	}
 }
