@@ -182,10 +182,11 @@
 
 		/**
 		 * @param Request $request
+		 * @param array   $queryOverrides
 		 *
 		 * @return Response
 		 */
-		protected function doList(Request $request): Response {
+		protected function doList(Request $request, array $queryOverrides = []): Response {
 			if ($request->query->has('q')) {
 				$queryBuilder = $this->entityManager->createQueryBuilder()
 					->from($this->entityClass, 'e')
@@ -209,7 +210,7 @@
 					return $this->respond($request, new EmptyQueryError());
 
 				try {
-					$this->queryManager->apply($queryBuilder, $query);
+					$this->queryManager->apply($queryBuilder, $queryOverrides + $query);
 				} catch (\Exception $exception) {
 					return $this->respond($request, new GenericApiError($exception->getMessage()));
 				}
