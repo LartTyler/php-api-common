@@ -14,6 +14,7 @@
 	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityCreateEvent;
 	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityDeleteEvent;
 	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityUpdateEvent;
+	use DaybreakStudios\RestApiCommon\Exceptions\ApiErrorException;
 	use DaybreakStudios\RestApiCommon\ResponderService;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use DaybreakStudios\Utility\EntityTransformers\EntityTransformerInterface;
@@ -102,12 +103,7 @@
 			try {
 				$entity = $transformer->create($payload);
 			} catch (EntityTransformerException $exception) {
-				if ($exception instanceof ConstraintViolationException)
-					$error = new ValidationFailedError($exception->getErrors());
-				else
-					$error = new GenericApiError($exception->getMessage());
-
-				return $this->respond($request, $error);
+				return $this->handleCrudException($request, $exception);
 			}
 
 			if ($this->eventDispatcher !== null) {
@@ -141,12 +137,7 @@
 			try {
 				$transformer->update($entity, $payload);
 			} catch (EntityTransformerException $exception) {
-				if ($exception instanceof ConstraintViolationException)
-					$error = new ValidationFailedError($exception->getErrors());
-				else
-					$error = new GenericApiError($exception->getMessage());
-
-				return $this->respond($request, $error);
+				return $this->handleCrudException($request, $exception);
 			}
 
 			if ($this->eventDispatcher !== null) {
@@ -270,6 +261,23 @@
 			}
 
 			return $normalized;
+		}
+
+		/**
+		 * @param Request    $request
+		 * @param \Exception $exception
+		 *
+		 * @return Response
+		 */
+		protected function handleCrudException(Request $request, \Exception $exception): Response {
+			if ($exception instanceof ConstraintViolationException)
+				$error = new ValidationFailedError($exception->getErrors());
+			else if ($exception instanceof ApiErrorException)
+				$error = $exception->getApiError();
+			else
+				$error = new GenericApiError($exception->getMessage());
+
+			return $this->respond($request, $error);
 		}
 
 		/**
