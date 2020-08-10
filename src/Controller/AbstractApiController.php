@@ -239,7 +239,7 @@
 			if (is_array($data))
 				$data = $this->normalizeMany($data, $projection);
 			else if ($data instanceof EntityInterface)
-				$data = $this->normalizeOne($data, $projection);
+				$data = $projection->filter($this->normalizeOne($data, $projection));
 
 			return $this->responder->createResponse($data);
 		}
