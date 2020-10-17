@@ -18,16 +18,16 @@ Vagrant.configure("2") do |config|
     apt-get update -y
     add-apt-repository -y ppa:ondrej/php
 
-    apt-get install -y ntp php7.2-common php7.2-cli php7.2-curl php7.2-zip php7.2-zip php7.2-mbstring php7.2-xml \
-      php7.2-xdebug php7.2-json
+    apt-get install -y ntp php7.3-common php7.3-cli php7.3-curl php7.3-zip php7.3-zip php7.3-mbstring php7.3-xml \
+      php7.3-xdebug php7.3-json
     apt-get install -y composer
 
-    if grep -Fqvx "xdebug.remote_enable" /etc/php/7.2/mods-available/xdebug.ini; then
-      echo "xdebug.remote_enable = on" >> /etc/php/7.2/mods-available/xdebug.ini
-      echo "xdebug.remote_connect_back = on" >> /etc/php/7.2/mods-available/xdebug.ini
-      echo "xdebug.idekey = application" >> /etc/php/7.2/mods-available/xdebug.ini
-      echo "xdebug.remote_autostart = on" >> /etc/php/7.2/mods-available/xdebug.ini
-      echo "xdebug.remote_host = 10.0.2.2" >> /etc/php/7.2/mods-available/xdebug.ini
+    if grep -Fqvx "xdebug.remote_enable" /etc/php/7.3/mods-available/xdebug.ini; then
+      echo "xdebug.remote_enable = on" >> /etc/php/7.3/mods-available/xdebug.ini
+      echo "xdebug.remote_connect_back = on" >> /etc/php/7.3/mods-available/xdebug.ini
+      echo "xdebug.idekey = application" >> /etc/php/7.3/mods-available/xdebug.ini
+      echo "xdebug.remote_autostart = on" >> /etc/php/7.3/mods-available/xdebug.ini
+      echo "xdebug.remote_host = 10.0.2.2" >> /etc/php/7.3/mods-available/xdebug.ini
     fi
   SHELL
 
