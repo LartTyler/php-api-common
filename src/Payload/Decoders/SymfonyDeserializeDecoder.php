@@ -3,6 +3,7 @@
 
 	use DaybreakStudios\RestApiCommon\Error\Errors\Validation\ValidationFailedError;
 	use DaybreakStudios\RestApiCommon\Exceptions\ApiErrorException;
+	use DaybreakStudios\RestApiCommon\Payload\DecoderParseContext;
 	use DaybreakStudios\RestApiCommon\Payload\DecoderIntent;
 	use DaybreakStudios\RestApiCommon\Payload\Exceptions\PayloadDecoderException;
 	use DaybreakStudios\RestApiCommon\Payload\PayloadDecoderInterface;
@@ -15,6 +16,14 @@
 		public const GROUP_UPDATE = 'update';
 
 		/**
+		 * Indicates the fully-qualified class name that should be passed to {@see SerializerInterface::deserialize()}
+		 * when parsing the input payload
+		 *
+		 * This context variable is required.
+		 */
+		public const CONTEXT_PAYLOAD_CLASS = 'symfony_deserializer.payload_class';
+
+		/**
 		 * @var SerializerInterface
 		 */
 		protected $serializer;
@@ -23,11 +32,6 @@
 		 * @var string
 		 */
 		protected $defaultFormat;
-
-		/**
-		 * @var string
-		 */
-		protected $payloadClass;
 
 		/**
 		 * @var ValidatorInterface|null
@@ -54,18 +58,15 @@
 		 *
 		 * @param SerializerInterface     $serializer
 		 * @param string                  $defaultFormat
-		 * @param string                  $payloadClass
 		 * @param ValidatorInterface|null $validator
 		 */
 		public function __construct(
 			SerializerInterface $serializer,
 			string $defaultFormat,
-			string $payloadClass,
 			ValidatorInterface $validator = null
 		) {
 			$this->serializer = $serializer;
 			$this->defaultFormat = $defaultFormat;
-			$this->payloadClass = $payloadClass;
 			$this->validator = $validator;
 
 			if ($validator) {
@@ -83,12 +84,21 @@
 
 		/**
 		 * {@inheritdoc}
+		 *
+		 * @see SymfonyDeserializeDecoder::CONTEXT_PAYLOAD_CLASS
 		 */
-		public function parse(string $intent, string $input, ?string $format = 'json'): object {
+		public function parse(string $intent, string $input, array $context = []): object {
+			$payloadClass = $context[static::CONTEXT_PAYLOAD_CLASS] ?? null;
+
+			assert(
+				is_string($payloadClass) && class_exists($payloadClass),
+				sprintf('%s requires the "%s" context variable', static::class, static::CONTEXT_PAYLOAD_CLASS)
+			);
+
 			$payload = $this->serializer->deserialize(
 				$input,
-				$this->getPayloadClass(),
-				$format ?? $this->getDefaultFormat(),
+				$payloadClass,
+				$context[DecoderParseContext::INPUT_FORMAT] ?? $this->getDefaultFormat(),
 				$this->getDeserializeContext()
 			);
 
@@ -123,24 +133,6 @@
 		 */
 		public function setDefaultFormat(string $defaultFormat) {
 			$this->defaultFormat = $defaultFormat;
-
-			return $this;
-		}
-
-		/**
-		 * @return string
-		 */
-		public function getPayloadClass(): string {
-			return $this->payloadClass;
-		}
-
-		/**
-		 * @param string $payloadClass
-		 *
-		 * @return $this
-		 */
-		public function setPayloadClass(string $payloadClass) {
-			$this->payloadClass = $payloadClass;
 
 			return $this;
 		}

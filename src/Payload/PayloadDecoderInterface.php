@@ -3,12 +3,12 @@
 
 	interface PayloadDecoderInterface {
 		/**
-		 * @param string      $intent
-		 * @param string      $input
-		 * @param string|null $format
+		 * @param string $intent
+		 * @param string $input
+		 * @param array  $context
 		 *
 		 * @return object
 		 * @see DecoderIntent
 		 */
-		public function parse(string $intent, string $input, ?string $format = 'json'): object;
+		public function parse(string $intent, string $input, array $context = []): object;
 	}
