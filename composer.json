@@ -41,8 +41,7 @@
 		"dbstudios/entity-transformers": "If you want to use the AbstractApiController",
 		"dbstudios/doctrine-entities": "If you want to use the AbstractApiController",
 		"doctrine/orm": "If you want to use the AbstractApiController",
-		"symfony/event-dispatcher": "If you want to use the event features of AbstractApiController",
-		"symfony/serializer": "If you want to use the symfony/serializer based payload decoder"
+		"symfony/event-dispatcher": "If you want to use the event features of AbstractApiController"
 	},
 	"scripts": {
 		"test": "phpunit ./tests"
