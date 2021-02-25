@@ -25,15 +25,15 @@
 	use DaybreakStudios\Utility\EntityTransformers\Exceptions\EntityTransformerException;
 	use Doctrine\ORM\EntityManagerInterface;
 	use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-	use Symfony\Component\EventDispatcher\EventDispatcher;
 	use Symfony\Component\HttpFoundation\Request;
 	use Symfony\Component\HttpFoundation\Response;
+	use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 	abstract class AbstractApiController extends AbstractController {
 		/**
 		 * @var QueryManagerInterface
 		 */
-		protected $queryManager;
+		protected QueryManagerInterface $queryManager;
 
 		/**
 		 * @var string
@@ -43,22 +43,22 @@
 		/**
 		 * @var PayloadDecoderInterface
 		 */
-		protected $payloadDecoder;
+		protected PayloadDecoderInterface $payloadDecoder;
 
 		/**
 		 * @var EntityManagerInterface
 		 */
-		protected $entityManager;
+		protected EntityManagerInterface $entityManager;
 
 		/**
 		 * @var ResponderService
 		 */
-		protected $responder;
+		protected ResponderService $responder;
 
 		/**
-		 * @var EventDispatcher|null
+		 * @var EventDispatcherInterface|null
 		 */
-		protected $eventDispatcher = null;
+		protected ?EventDispatcherInterface $eventDispatcher = null;
 
 		/**
 		 * AbstractApiController constructor.
@@ -100,6 +100,17 @@
 		 */
 		public function setResponderService(ResponderService $responder): void {
 			$this->responder = $responder;
+		}
+
+		/**
+		 * @required
+		 *
+		 * @param EventDispatcherInterface $eventDispatcher
+		 *
+		 * @return void
+		 */
+		public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void {
+			$this->eventDispatcher = $eventDispatcher;
 		}
 
 		/**

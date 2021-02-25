@@ -8,12 +8,12 @@
 		/**
 		 * @var int
 		 */
-		protected $depth;
+		protected int $depth;
 
 		/**
 		 * @var int
 		 */
-		protected $flags;
+		protected int $flags;
 
 		/**
 		 * SimpleJsonPayloadDecoder constructor.

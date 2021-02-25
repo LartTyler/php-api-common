@@ -7,7 +7,7 @@
 		/**
 		 * @var ApiErrorInterface
 		 */
-		protected $error;
+		protected ApiErrorInterface $error;
 
 		/**
 		 * ApiErrorException constructor.

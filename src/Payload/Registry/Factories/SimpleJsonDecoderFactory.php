@@ -9,7 +9,7 @@
 		/**
 		 * @var SimpleJsonPayloadDecoder
 		 */
-		protected $decoder;
+		protected SimpleJsonPayloadDecoder $decoder;
 
 		/**
 		 * SimpleJsonDecoderFactory constructor.

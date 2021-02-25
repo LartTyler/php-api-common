@@ -17,37 +17,37 @@
 		/**
 		 * @var SerializerInterface
 		 */
-		protected $serializer;
+		protected SerializerInterface $serializer;
 
 		/**
 		 * @var string
 		 */
-		protected $defaultFormat;
+		protected string $defaultFormat;
 
 		/**
 		 * @var string
 		 */
-		protected $payloadClass;
+		protected string $payloadClass;
 
 		/**
 		 * @var ValidatorInterface|null
 		 */
-		protected $validator;
+		protected ?ValidatorInterface $validator;
 
 		/**
 		 * @var string[]
 		 */
-		protected $createGroups = [];
+		protected array $createGroups = [];
 
 		/**
 		 * @var string[]
 		 */
-		protected $updateGroups = [];
+		protected array $updateGroups = [];
 
 		/**
 		 * @var array
 		 */
-		protected $deserializeContext = [];
+		protected array $deserializeContext = [];
 
 		/**
 		 * SymfonyDeserializeDecoder constructor.
@@ -121,7 +121,7 @@
 		 *
 		 * @return $this
 		 */
-		public function setDefaultFormat(string $defaultFormat) {
+		public function setDefaultFormat(string $defaultFormat): SymfonyDeserializeDecoder {
 			$this->defaultFormat = $defaultFormat;
 
 			return $this;
@@ -139,7 +139,7 @@
 		 *
 		 * @return $this
 		 */
-		public function setPayloadClass(string $payloadClass) {
+		public function setPayloadClass(string $payloadClass): SymfonyDeserializeDecoder {
 			$this->payloadClass = $payloadClass;
 
 			return $this;
@@ -157,7 +157,7 @@
 		 *
 		 * @return $this
 		 */
-		public function setCreateGroups(array $createGroups) {
+		public function setCreateGroups(array $createGroups): SymfonyDeserializeDecoder {
 			$this->createGroups = $createGroups;
 
 			return $this;
@@ -175,7 +175,7 @@
 		 *
 		 * @return $this
 		 */
-		public function setUpdateGroups(array $updateGroups) {
+		public function setUpdateGroups(array $updateGroups): SymfonyDeserializeDecoder {
 			$this->updateGroups = $updateGroups;
 
 			return $this;
@@ -193,7 +193,7 @@
 		 *
 		 * @return $this
 		 */
-		public function setDeserializeContext(array $deserializeContext) {
+		public function setDeserializeContext(array $deserializeContext): SymfonyDeserializeDecoder {
 			$this->deserializeContext = $deserializeContext;
 
 			return $this;

@@ -7,12 +7,12 @@
 		/**
 		 * @var PayloadDecoderFactoryInterface
 		 */
-		protected $decoderFactory;
+		protected PayloadDecoderFactoryInterface $decoderFactory;
 
 		/**
 		 * @var PayloadDecoderInterface[]
 		 */
-		protected $decoders = [];
+		protected array $decoders = [];
 
 		public function __construct(PayloadDecoderFactoryInterface $decoderFactory) {
 			$this->decoderFactory = $decoderFactory;

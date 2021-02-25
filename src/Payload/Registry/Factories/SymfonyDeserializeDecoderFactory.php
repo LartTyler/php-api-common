@@ -11,23 +11,23 @@
 		/**
 		 * @var SerializerInterface
 		 */
-		protected $serializer;
+		protected SerializerInterface $serializer;
 
 		/**
 		 * @var string
 		 */
-		protected $defaultFormat;
+		protected string $defaultFormat;
 
 		/**
 		 * @var ValidatorInterface|null
 		 */
-		protected $validator;
+		protected ?ValidatorInterface $validator;
 
 		/**
 		 * SymfonyDeserializeDecoderFactory constructor.
 		 *
-		 * @param SerializerInterface $serializer
-		 * @param string $defaultFormat
+		 * @param SerializerInterface     $serializer
+		 * @param string                  $defaultFormat
 		 * @param ValidatorInterface|null $validator
 		 */
 		public function __construct(

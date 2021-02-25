@@ -17,17 +17,17 @@
 		/**
 		 * @var ResponderInterface
 		 */
-		protected $responder;
+		protected ResponderInterface $responder;
 
 		/**
 		 * @var RequestStack
 		 */
-		protected $requestStack;
+		protected RequestStack $requestStack;
 
 		/**
 		 * @var string
 		 */
-		protected $defaultFormat;
+		protected string $defaultFormat;
 
 		/**
 		 * ResponderService constructor.
