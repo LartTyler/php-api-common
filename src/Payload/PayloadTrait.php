@@ -46,7 +46,8 @@
 			if ($useCache && isset($this->propertyCache[$property]))
 				return $this->propertyCache[$property];
 
-			return $this->propertyCache[$property] = $this->reflectionClass->getProperty($property)->isInitialized();
+			return $this->propertyCache[$property] = $this->reflectionClass->getProperty($property)
+				->isInitialized($this);
 		}
 
 		/**
