@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+    php:
+        build: './docker/php'
+        volumes:
+            -
+                type: bind
+                source: .
+                target: /var/www/html

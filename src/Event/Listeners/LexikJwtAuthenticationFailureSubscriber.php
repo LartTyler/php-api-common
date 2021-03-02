@@ -20,7 +20,7 @@
 		/**
 		 * @var ResponderService
 		 */
-		protected $responder;
+		protected ResponderService $responder;
 
 		/**
 		 * LexikJwtAuthenticationFailureListener constructor.
@@ -34,7 +34,7 @@
 		/**
 		 * {@inheritdoc}
 		 */
-		public static function getSubscribedEvents() {
+		public static function getSubscribedEvents(): array {
 			return [
 				Events::AUTHENTICATION_FAILURE => 'onAuthenticationFailure',
 				Events::JWT_INVALID => 'onInvalidToken',

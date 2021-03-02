@@ -10,7 +10,7 @@
 		/**
 		 * @var ResponderService
 		 */
-		protected $responder;
+		protected ResponderService $responder;
 
 		/**
 		 * ApiErrorExceptionSubscriber constructor.
@@ -22,15 +22,6 @@
 		}
 
 		/**
-		 * {@inheritdoc}
-		 */
-		public static function getSubscribedEvents(): array {
-			return [
-				'kernel.exception' => 'onKernelException',
-			];
-		}
-
-		/**
 		 * @param ExceptionEvent $event
 		 */
 		public function onKernelException(ExceptionEvent $event): void {
@@ -38,5 +29,14 @@
 
 			if ($exception instanceof ApiErrorException)
 				$event->setResponse($this->responder->createErrorResponse($exception->getApiError()));
+		}
+
+		/**
+		 * {@inheritdoc}
+		 */
+		public static function getSubscribedEvents(): array {
+			return [
+				'kernel.exception' => 'onKernelException',
+			];
 		}
 	}

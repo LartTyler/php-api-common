@@ -9,7 +9,7 @@
 		/**
 		 * @var SerializerInterface
 		 */
-		protected $serializer;
+		protected SerializerInterface $serializer;
 
 		/**
 		 * Responder constructor.

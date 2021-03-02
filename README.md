@@ -7,6 +7,8 @@ This package is broken up into several parts:
 - [Doctrine Query Document](#doctrine-query-document) code, files that are useful in tandem with the
   `dbstudios/doctrine-query-document` library.
 - [Lexik JWT](#lexik-jwt) code, files that are useful in tandem with the `lexik/jwt-authentication-bundle` bundle.
+- [Payload](#payload) code, files that are useful in tandem with the `symfony/serializer` component's deserialize
+  functionality.
 
 # Common
 Common files include the `ResponderInterface` and it's implementations, as well as the classes in the top level of the
@@ -119,3 +121,67 @@ can be displayed directly to the end-user.
 To register the subscriber in a Symfony application, be sure to add the
 [`kernel.event_subscriber`](https://symfony.com/doc/current/reference/dic_tags.html#dic-tags-kernel-event-subscriber)
 tag to the service!
+
+# Payload
+The payload component adds a simple framework for parsing API payloads into Data Transfer Object (DTO) classes. While
+useful by itself, giving you a more concrete set of fields on the objects your API consumes, it is most useful when also
+paired with the `symfony/validator` package, giving you a clean way to validate input to your API. By default,
+assertions tagged with the "create" group will only be run when `DecoderIntent::CREATE` is passed to the `parse()`
+method, while assertions tagged with the "update" method will be run when `DecoderIntent::UPDATE` is passed. Assertions
+in the "Default" group will _always_ run. For example:
+
+```php
+<?php
+    use Symfony\Component\Validator\Constraint as Assert;
+    use DaybreakStudios\RestApiCommon\Payload\Decoders\SymfonyDeserializeDecoder;
+    use Symfony\Component\Serializer\SerializerInterface;
+    use Symfony\Component\Validator\Validator\ValidatorInterface;
+    use DaybreakStudios\RestApiCommon\Payload\DecoderIntent;
+
+    class UserPayload {
+        /**
+         * @Assert\Type("string")
+         * @Assert\NotBlank(groups={"create"})
+         * 
+         * @var string 
+         */
+        public $name;
+        
+        /**
+         * @Assert\Type("string")
+         * @Assert\Email()
+         * @Assert\NotBlank(groups={"create"}) 
+         * 
+         * @var string 
+         */
+        public $email;
+    }
+    
+    $input = json_encode([
+        'name' => 'Tyler Lartonoix',
+        'email' => 'invalid email',
+    ]);
+
+    /**
+     * These objects would come from some other part of your application, e.g. a service container 
+     * @var SerializerInterface $serializer
+     * @var ValidatorInterface $validator 
+     */
+
+    $decoder = new SymfonyDeserializeDecoder($serializer, 'json', UserPayload::class, $validator);
+    $payload = $decoder->parse(DecoderIntent::CREATE, $input);
+```
+
+In the above example, the final line's call to `SymfonyDeserializeDecoder::parse()` would result in an
+`ApiErrorException`, whose `error` field would be a `ValidationFailedError`, since the input payload did not pass
+validation (the email address was not a valid email address).
+
+If you're using PHP 8, you can use the `PayloadTrait` in your DTO class to gain access to the `exists()` and `unset()`
+utility methods. Since PHP 8 introduces the `mixed` psuedo-type, you can use it as the actual type for the properties on
+your DTO class. By doing so, you can use the `exists()` method, which uses `\ReflectionProperty::isInitialized()` to
+determine if a property was actually part of the input payload, and not just defaulting to `null` because the key was
+not included. This is useful when you have a property that might be part of the payload, but whose value could be `null`
+(since `isset()` would still return `false` when used on such a property). Since `exists()` uses reflection, results
+are cached to mitigate performance hits due to repeated calls for the same property. **Do not** call `unset()` directly
+on any property of a DTO class that you might need to call `exists()` on; instead, use `PayloadTrait::unset()` to unset
+the property and clear it from the `exists()` cache.

@@ -7,7 +7,7 @@
 		/**
 		 * @var object
 		 */
-		protected $payload;
+		protected object $payload;
 
 		/**
 		 * ApiEntityUpdateEvent constructor.

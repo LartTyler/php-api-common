@@ -8,7 +8,7 @@
 		/**
 		 * @var EntityInterface
 		 */
-		protected $entity;
+		protected EntityInterface $entity;
 
 		/**
 		 * AbstractApiEntityEvent constructor.

@@ -5,7 +5,6 @@
 	use DaybreakStudios\DoctrineQueryDocument\QueryManagerInterface;
 	use DaybreakStudios\RestApiCommon\Error\ApiErrorInterface;
 	use DaybreakStudios\RestApiCommon\Error\Errors\ApiController\GenericApiError;
-	use DaybreakStudios\RestApiCommon\Error\Errors\ApiController\InvalidPayloadError;
 	use DaybreakStudios\RestApiCommon\Error\Errors\DoctrineQueryDocument\EmptyQueryError;
 	use DaybreakStudios\RestApiCommon\Error\Errors\DoctrineQueryDocument\ProjectionSyntaxError;
 	use DaybreakStudios\RestApiCommon\Error\Errors\DoctrineQueryDocument\QuerySyntaxError;
@@ -15,6 +14,10 @@
 	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityDeleteEvent;
 	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityUpdateEvent;
 	use DaybreakStudios\RestApiCommon\Exceptions\ApiErrorException;
+	use DaybreakStudios\RestApiCommon\Payload\DecoderIntent;
+	use DaybreakStudios\RestApiCommon\Payload\Decoders\SimpleJsonPayloadDecoder;
+	use DaybreakStudios\RestApiCommon\Payload\Exceptions\PayloadDecoderException;
+	use DaybreakStudios\RestApiCommon\Payload\PayloadDecoderInterface;
 	use DaybreakStudios\RestApiCommon\ResponderService;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
 	use DaybreakStudios\Utility\EntityTransformers\EntityTransformerInterface;
@@ -22,48 +25,59 @@
 	use DaybreakStudios\Utility\EntityTransformers\Exceptions\EntityTransformerException;
 	use Doctrine\ORM\EntityManagerInterface;
 	use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-	use Symfony\Component\EventDispatcher\EventDispatcher;
 	use Symfony\Component\HttpFoundation\Request;
 	use Symfony\Component\HttpFoundation\Response;
+	use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 	abstract class AbstractApiController extends AbstractController {
+		/**
+		 * @var QueryManagerInterface
+		 */
+		protected QueryManagerInterface $queryManager;
+
 		/**
 		 * @var string
 		 */
 		protected $entityClass;
 
 		/**
-		 * @var QueryManagerInterface
+		 * @var PayloadDecoderInterface
 		 */
-		protected $queryManager;
+		protected PayloadDecoderInterface $payloadDecoder;
 
 		/**
 		 * @var EntityManagerInterface
 		 */
-		protected $entityManager;
+		protected EntityManagerInterface $entityManager;
 
 		/**
 		 * @var ResponderService
 		 */
-		protected $responder;
+		protected ResponderService $responder;
 
 		/**
-		 * @var EventDispatcher|null
+		 * @var EventDispatcherInterface|null
 		 */
-		protected $eventDispatcher = null;
+		protected ?EventDispatcherInterface $eventDispatcher = null;
 
 		/**
 		 * AbstractApiController constructor.
 		 *
-		 * @param QueryManagerInterface $queryManager
-		 * @param string                $entityClass
+		 * @param QueryManagerInterface        $queryManager
+		 * @param string                       $entityClass
+		 * @param PayloadDecoderInterface|null $payloadDecoder
 		 */
-		public function __construct(QueryManagerInterface $queryManager, string $entityClass) {
+		public function __construct(
+			QueryManagerInterface $queryManager,
+			string $entityClass,
+			?PayloadDecoderInterface $payloadDecoder = null
+		) {
 			if (!is_a($entityClass, EntityInterface::class, true))
 				throw new \InvalidArgumentException($entityClass . ' must implement ' . EntityInterface::class);
 
 			$this->queryManager = $queryManager;
 			$this->entityClass = $entityClass;
+			$this->payloadDecoder = $payloadDecoder ?? new SimpleJsonPayloadDecoder();
 		}
 
 		/**
@@ -89,16 +103,28 @@
 		}
 
 		/**
+		 * @required
+		 *
+		 * @param EventDispatcherInterface $eventDispatcher
+		 *
+		 * @return void
+		 */
+		public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void {
+			$this->eventDispatcher = $eventDispatcher;
+		}
+
+		/**
 		 * @param EntityTransformerInterface $transformer
 		 * @param Request                    $request
 		 *
 		 * @return Response
 		 */
 		protected function doCreate(EntityTransformerInterface $transformer, Request $request): Response {
-			$payload = @json_decode($request->getContent());
-
-			if (json_last_error() !== JSON_ERROR_NONE)
-				return $this->respond($request, new InvalidPayloadError());
+			try {
+				$payload = $this->payloadDecoder->parse(DecoderIntent::CREATE, $request->getContent());
+			} catch (PayloadDecoderException | ApiErrorException $exception) {
+				return $this->handleCrudException($request, $exception);
+			}
 
 			try {
 				$entity = $transformer->create($payload);
@@ -129,10 +155,11 @@
 			EntityInterface $entity,
 			Request $request
 		): Response {
-			$payload = @json_decode($request->getContent());
-
-			if (json_last_error() !== JSON_ERROR_NONE)
-				return $this->respond($request, new InvalidPayloadError());
+			try {
+				$payload = $this->payloadDecoder->parse(DecoderIntent::UPDATE, $request->getContent());
+			} catch (PayloadDecoderException | ApiErrorException $exception) {
+				return $this->handleCrudException($request, $exception);
+			}
 
 			try {
 				$transformer->update($entity, $payload);

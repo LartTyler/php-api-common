@@ -10,17 +10,17 @@
 		/**
 		 * @var string
 		 */
-		protected $message;
+		protected string $message;
 
 		/**
 		 * @var int|null
 		 */
-		protected $httpStatus;
+		protected ?int $httpStatus;
 
 		/**
 		 * @var array|null
 		 */
-		protected $context = null;
+		protected ?array $context = null;
 
 		/**
 		 * ApiError constructor.

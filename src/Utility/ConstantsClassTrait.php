@@ -5,7 +5,7 @@
 		/**
 		 * @var string[]|null
 		 */
-		private static $values = null;
+		private static ?array $values = null;
 
 		/**
 		 * ConstantsClassTrait constructor.
