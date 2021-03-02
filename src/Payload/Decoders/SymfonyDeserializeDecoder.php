@@ -84,7 +84,7 @@
 		/**
 		 * {@inheritdoc}
 		 */
-		public function parse(string $intent, string $input, ?string $format = 'json'): object {
+		public function parse(string $intent, string $input, ?string $format = null): object {
 			$payload = $this->serializer->deserialize(
 				$input,
 				$this->getPayloadClass(),

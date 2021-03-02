@@ -10,5 +10,5 @@
 		 * @return object
 		 * @see DecoderIntent
 		 */
-		public function parse(string $intent, string $input, ?string $format = 'json'): object;
+		public function parse(string $intent, string $input, ?string $format = null): object;
 	}

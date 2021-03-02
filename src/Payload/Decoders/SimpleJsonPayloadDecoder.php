@@ -29,8 +29,8 @@
 		/**
 		 * {@inheritdoc}
 		 */
-		public function parse(string $intent, string $input, ?string $format = 'json'): object {
-			if ($format !== 'json')
+		public function parse(string $intent, string $input, ?string $format = null): object {
+			if ($format && $format !== 'json')
 				throw new \Exception(static::class . ' can only parse "json" formats');
 
 			$payload = json_decode($input, false, $this->depth, $this->flags);
