@@ -128,7 +128,7 @@
 
 			try {
 				$entity = $transformer->create($payload);
-			} catch (EntityTransformerException $exception) {
+			} catch (EntityTransformerException | ApiErrorException $exception) {
 				return $this->handleCrudException($request, $exception);
 			}
 
@@ -163,7 +163,7 @@
 
 			try {
 				$transformer->update($entity, $payload);
-			} catch (EntityTransformerException $exception) {
+			} catch (EntityTransformerException | ApiErrorException $exception) {
 				return $this->handleCrudException($request, $exception);
 			}
 
