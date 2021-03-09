@@ -5,6 +5,7 @@
 	use DaybreakStudios\DoctrineQueryDocument\QueryManagerInterface;
 	use DaybreakStudios\RestApiCommon\Error\ApiErrorInterface;
 	use DaybreakStudios\RestApiCommon\Error\Errors\ApiController\GenericApiError;
+	use DaybreakStudios\RestApiCommon\Error\Errors\ApiController\PayloadRequiredError;
 	use DaybreakStudios\RestApiCommon\Error\Errors\DoctrineQueryDocument\EmptyQueryError;
 	use DaybreakStudios\RestApiCommon\Error\Errors\DoctrineQueryDocument\ProjectionSyntaxError;
 	use DaybreakStudios\RestApiCommon\Error\Errors\DoctrineQueryDocument\QuerySyntaxError;
@@ -24,6 +25,7 @@
 	use DaybreakStudios\Utility\EntityTransformers\CloneableEntityTransformerInterface;
 	use DaybreakStudios\Utility\EntityTransformers\EntityTransformerInterface;
 	use DaybreakStudios\Utility\EntityTransformers\Exceptions\ConstraintViolationException;
+	use DaybreakStudios\Utility\EntityTransformers\Exceptions\EntityCloneException;
 	use DaybreakStudios\Utility\EntityTransformers\Exceptions\EntityTransformerException;
 	use Doctrine\ORM\EntityManagerInterface;
 	use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -205,6 +207,8 @@
 				$clonedEntity = $transformer->clone($source, $payload);
 			} catch (EntityTransformerException | ApiErrorException $exception) {
 				return $this->handleCrudException($request, $exception);
+			} catch (EntityCloneException $exception) {
+				return $this->respond($request, new PayloadRequiredError());
 			}
 
 			if ($this->eventDispatcher !== null) {
