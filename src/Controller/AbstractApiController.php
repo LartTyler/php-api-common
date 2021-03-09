@@ -10,6 +10,7 @@
 	use DaybreakStudios\RestApiCommon\Error\Errors\DoctrineQueryDocument\QuerySyntaxError;
 	use DaybreakStudios\RestApiCommon\Error\Errors\NotFoundError;
 	use DaybreakStudios\RestApiCommon\Error\Errors\Validation\ValidationFailedError;
+	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityCloneEvent;
 	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityCreateEvent;
 	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityDeleteEvent;
 	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityUpdateEvent;
@@ -20,6 +21,7 @@
 	use DaybreakStudios\RestApiCommon\Payload\PayloadDecoderInterface;
 	use DaybreakStudios\RestApiCommon\ResponderService;
 	use DaybreakStudios\Utility\DoctrineEntities\EntityInterface;
+	use DaybreakStudios\Utility\EntityTransformers\CloneableEntityTransformerInterface;
 	use DaybreakStudios\Utility\EntityTransformers\EntityTransformerInterface;
 	use DaybreakStudios\Utility\EntityTransformers\Exceptions\ConstraintViolationException;
 	use DaybreakStudios\Utility\EntityTransformers\Exceptions\EntityTransformerException;
@@ -176,6 +178,44 @@
 			$this->entityManager->flush();
 
 			return $this->respond($request, $entity);
+		}
+
+		/**
+		 * @param CloneableEntityTransformerInterface $transformer
+		 * @param EntityInterface                     $source
+		 * @param Request                             $request
+		 *
+		 * @return Response
+		 */
+		protected function doClone(
+			CloneableEntityTransformerInterface $transformer,
+			EntityInterface $source,
+			Request $request
+		): Response {
+			if ($request->getContent()) {
+				try {
+					$payload = $this->payloadDecoder->parse(DecoderIntent::CLONE, $request->getContent());
+				} catch (PayloadDecoderException | ApiErrorException $exception) {
+					return $this->handleCrudException($request, $exception);
+				}
+			} else
+				$payload = null;
+
+			try {
+				$clonedEntity = $transformer->clone($source, $payload);
+			} catch (EntityTransformerException | ApiErrorException $exception) {
+				return $this->handleCrudException($request, $exception);
+			}
+
+			if ($this->eventDispatcher !== null) {
+				$event = new ApiEntityCloneEvent($source, $clonedEntity);
+
+				$this->eventDispatcher->dispatch($event);
+			}
+
+			$this->entityManager->flush();
+
+			return $this->respond($request, $clonedEntity);
 		}
 
 		/**

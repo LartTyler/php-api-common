@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "023fe0de6fb873cb66883cd32fcf2b7b",
+    "content-hash": "0d9bd6dfe6f3175247132e371429c3a2",
     "packages": [
         {
             "name": "psr/event-dispatcher",
@@ -783,16 +783,16 @@
         },
         {
             "name": "dbstudios/entity-transformers",
-            "version": "1.2.1",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LartTyler/entity-transformers.git",
-                "reference": "be5ddd4800df42e60413658c40f4b3a1e62970e8"
+                "reference": "a2aba22b62568453280b5b0a9b25059abef689d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LartTyler/entity-transformers/zipball/be5ddd4800df42e60413658c40f4b3a1e62970e8",
-                "reference": "be5ddd4800df42e60413658c40f4b3a1e62970e8",
+                "url": "https://api.github.com/repos/LartTyler/entity-transformers/zipball/a2aba22b62568453280b5b0a9b25059abef689d6",
+                "reference": "a2aba22b62568453280b5b0a9b25059abef689d6",
                 "shasum": ""
             },
             "require": {
@@ -827,9 +827,9 @@
             "description": "A base system for creating objects to update Doctrine entities",
             "support": {
                 "issues": "https://github.com/LartTyler/entity-transformers/issues",
-                "source": "https://github.com/LartTyler/entity-transformers/tree/1.2.1"
+                "source": "https://github.com/LartTyler/entity-transformers/tree/1.3.0"
             },
-            "time": "2019-04-23T02:33:32+00:00"
+            "time": "2021-03-05T21:21:02+00:00"
         },
         {
             "name": "doctrine/annotations",

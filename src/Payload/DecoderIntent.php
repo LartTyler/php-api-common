@@ -8,4 +8,5 @@
 
 		public const CREATE = 'create';
 		public const UPDATE = 'update';
+		public const CLONE = 'clone';
 	}
