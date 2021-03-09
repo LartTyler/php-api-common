@@ -13,6 +13,7 @@
 	class SymfonyDeserializeDecoder implements PayloadDecoderInterface {
 		public const GROUP_CREATE = 'create';
 		public const GROUP_UPDATE = 'update';
+		public const GROUP_CLONE = 'clone';
 
 		/**
 		 * @var SerializerInterface
@@ -35,14 +36,9 @@
 		protected ?ValidatorInterface $validator;
 
 		/**
-		 * @var string[]
+		 * @var string[][]
 		 */
-		protected array $createGroups = [];
-
-		/**
-		 * @var string[]
-		 */
-		protected array $updateGroups = [];
+		protected array $validatorGroups = [];
 
 		/**
 		 * @var array
@@ -56,12 +52,14 @@
 		 * @param string                  $defaultFormat
 		 * @param string                  $payloadClass
 		 * @param ValidatorInterface|null $validator
+		 * @param string[][]|null         $validatorGroups
 		 */
 		public function __construct(
 			SerializerInterface $serializer,
 			string $defaultFormat,
 			string $payloadClass,
-			ValidatorInterface $validator = null
+			ValidatorInterface $validator = null,
+			array $validatorGroups = null
 		) {
 			$this->serializer = $serializer;
 			$this->defaultFormat = $defaultFormat;
@@ -69,14 +67,19 @@
 			$this->validator = $validator;
 
 			if ($validator) {
-				$this->createGroups = [
-					Constraint::DEFAULT_GROUP,
-					static::GROUP_CREATE,
-				];
-
-				$this->updateGroups = [
-					Constraint::DEFAULT_GROUP,
-					static::GROUP_UPDATE,
+				$this->validatorGroups = $validatorGroups ?: [
+					DecoderIntent::CLONE => [
+						Constraint::DEFAULT_GROUP,
+						static::GROUP_CLONE,
+					],
+					DecoderIntent::CREATE => [
+						Constraint::DEFAULT_GROUP,
+						static::GROUP_CREATE,
+					],
+					DecoderIntent::UPDATE => [
+						Constraint::DEFAULT_GROUP,
+						static::GROUP_UPDATE,
+					],
 				];
 			}
 		}
@@ -93,11 +96,9 @@
 			);
 
 			if ($this->validator) {
-				if ($intent === DecoderIntent::CREATE)
-					$groups = $this->getCreateGroups();
-				else if ($intent === DecoderIntent::UPDATE)
-					$groups = $this->getUpdateGroups();
-				else
+				$groups = $this->getGroups($intent);
+
+				if ($groups === null)
 					throw PayloadDecoderException::invalidIntent($intent);
 
 				$failures = $this->validator->validate($payload, null, $groups);
@@ -146,37 +147,70 @@
 		}
 
 		/**
-		 * @return string[]
+		 * Returns the validator groups to use for the given {@see DecoderIntent}, or `null` if there are no groups
+		 * defined.
+		 *
+		 * @param string $intent
+		 *
+		 * @return string[]|null
+		 * @see DecoderIntent
 		 */
-		public function getCreateGroups(): array {
-			return $this->createGroups;
+		public function getGroups(string $intent): ?array {
+			return $this->validatorGroups[$intent] ?? null;
 		}
 
 		/**
-		 * @param string[] $createGroups
+		 * @param string $intent
+		 * @param array  $groups
 		 *
 		 * @return $this
 		 */
-		public function setCreateGroups(array $createGroups): SymfonyDeserializeDecoder {
-			$this->createGroups = $createGroups;
+		public function setGroups(string $intent, array $groups): SymfonyDeserializeDecoder {
+			$this->validatorGroups[$intent] = $groups;
 
 			return $this;
 		}
 
 		/**
 		 * @return string[]
+		 * @deprecated deprecated since version 1.5.1
+		 *
+		 */
+		public function getCreateGroups(): array {
+			return $this->getGroups(DecoderIntent::CREATE);
+		}
+
+		/**
+		 * @param string[] $createGroups
+		 *
+		 * @return $this
+		 * @deprecated deprecated since version 1.5.1
+		 *
+		 */
+		public function setCreateGroups(array $createGroups): SymfonyDeserializeDecoder {
+			$this->setGroups(DecoderIntent::CREATE, $createGroups);
+
+			return $this;
+		}
+
+		/**
+		 * @return string[]
+		 * @deprecated deprecated since version 1.5.1
+		 *
 		 */
 		public function getUpdateGroups(): array {
-			return $this->updateGroups;
+			return $this->getGroups(DecoderIntent::UPDATE);
 		}
 
 		/**
 		 * @param string[] $updateGroups
 		 *
 		 * @return $this
+		 * @deprecated deprecated since version 1.5.1
+		 *
 		 */
 		public function setUpdateGroups(array $updateGroups): SymfonyDeserializeDecoder {
-			$this->updateGroups = $updateGroups;
+			$this->setGroups(DecoderIntent::UPDATE, $updateGroups);
 
 			return $this;
 		}
