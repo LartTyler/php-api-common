@@ -249,39 +249,40 @@
 		 * @return Response
 		 */
 		protected function doList(Request $request, array $queryOverrides = []): Response {
+			if (!$queryOverrides && !$request->query->has('q'))
+				return $this->entityManager->getRepository($this->entityClass)->findAll();
+
+			$queryBuilder = $this->entityManager->createQueryBuilder()
+				->from($this->entityClass, 'e')
+				->select('e');
+
+			$limit = $request->query->get('limit');
+
+			if (is_numeric($limit))
+				$queryBuilder->setMaxResults((int)$limit);
+
+			$offset = $request->query->get('offset');
+
+			if (is_numeric($offset))
+				$queryBuilder->setFirstResult((int)$offset);
+
 			if ($request->query->has('q')) {
-				$queryBuilder = $this->entityManager->createQueryBuilder()
-					->from($this->entityClass, 'e')
-					->select('e');
-
-				$limit = $request->query->get('limit');
-
-				if (is_numeric($limit))
-					$queryBuilder->setMaxResults((int)$limit);
-
-				$offset = $request->query->get('offset');
-
-				if (is_numeric($offset))
-					$queryBuilder->setFirstResult((int)$offset);
-
 				$query = @json_decode($request->query->get('q'), true);
 
 				if (json_last_error() !== JSON_ERROR_NONE)
 					return $this->respond($request, new QuerySyntaxError());
 				else if (!$query)
 					return $this->respond($request, new EmptyQueryError());
-
-				try {
-					$this->queryManager->apply($queryBuilder, $queryOverrides + $query);
-				} catch (\Exception $exception) {
-					return $this->respond($request, new GenericApiError($exception->getMessage()));
-				}
-
-				$results = $queryBuilder->getQuery()->getResult();
 			} else
-				$results = $this->entityManager->getRepository($this->entityClass)->findAll();
+				$query = [];
 
-			return $this->respond($request, $results);
+			try {
+				$this->queryManager->apply($queryBuilder, $queryOverrides + $query);
+			} catch (\Exception $exception) {
+				return $this->respond($request, new GenericApiError($exception->getMessage()));
+			}
+
+			return $this->respond($request, $queryBuilder->getQuery()->getResult());
 		}
 
 		/**
