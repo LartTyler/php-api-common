@@ -14,6 +14,8 @@
 	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityCloneEvent;
 	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityCreateEvent;
 	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityDeleteEvent;
+	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityPostCloneEvent;
+	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityPostCreateEvent;
 	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityUpdateEvent;
 	use DaybreakStudios\RestApiCommon\Exceptions\ApiErrorException;
 	use DaybreakStudios\RestApiCommon\Payload\DecoderIntent;
@@ -144,6 +146,14 @@
 
 			$this->entityManager->flush();
 
+			if ($this->eventDispatcher !== null) {
+				$event = new ApiEntityPostCreateEvent($entity, $payload);
+				$this->eventDispatcher->dispatch($event);
+
+				if ($event->getShouldFlush())
+					$this->entityManager->flush();
+			}
+
 			return $this->respond($request, $entity);
 		}
 
@@ -218,6 +228,14 @@
 			}
 
 			$this->entityManager->flush();
+
+			if ($this->eventDispatcher !== null) {
+				$event = new ApiEntityPostCloneEvent($source, $clonedEntity);
+				$this->eventDispatcher->dispatch($event);
+
+				if ($event->getShouldFlush())
+					$this->entityManager->flush();
+			}
 
 			return $this->respond($request, $clonedEntity);
 		}
