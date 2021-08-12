@@ -268,7 +268,7 @@
 		 */
 		protected function doList(Request $request, array $queryOverrides = []): Response {
 			if (!$queryOverrides && !$request->query->has('q'))
-				return $this->entityManager->getRepository($this->entityClass)->findAll();
+				return $this->respond($request, $this->entityManager->getRepository($this->entityClass)->findAll());
 
 			$queryBuilder = $this->entityManager->createQueryBuilder()
 				->from($this->entityClass, 'e')
