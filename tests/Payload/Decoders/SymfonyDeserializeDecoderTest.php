@@ -49,28 +49,17 @@
 			$this->assertFalse($payload->admin);
 		}
 
-		public function testCreateValidation() {
+		public function testCreateValidationEmpty() {
 			$this->expectException(ApiErrorException::class);
+			$this->decoder->parse(DecoderIntent::CREATE, '{}');
+		}
 
-			try {
-				$payload = $this->decoder->parse(DecoderIntent::CREATE, '{}');
-				var_dump($payload);
-			} catch (ApiErrorException $exception) {
-				$this->assertInstanceOf(ValidationFailedError::class, $exception->getApiError());
-
-				throw $exception;
-			}
-
+		public function testCreateValidationMissing() {
 			$this->expectException(ApiErrorException::class);
+			$this->decoder->parse(DecoderIntent::CREATE, '{"admin":"Tyler"}');
+		}
 
-			try {
-				$this->decoder->parse(DecoderIntent::CREATE, '{"admin":"Tyler"}');
-			} catch (ApiErrorException $exception) {
-				$this->assertInstanceOf(ValidationFailedError::class, $exception->getApiError());
-
-				throw $exception;
-			}
-
+		public function testCreateValidationSuccess() {
 			/** @var TestPayloadDTO $payload */
 			$payload = $this->decoder->parse(
 				DecoderIntent::CREATE,
@@ -113,14 +102,13 @@
 				]
 			);
 
-			AnnotationRegistry::registerLoader([require __DIR__ . '/../../../vendor/autoload.php', 'loadClass']);
-
 			$this->decoder = new SymfonyDeserializeDecoder(
 				$serializer,
 				'json',
 				TestPayloadDTO::class,
 				Validation::createValidatorBuilder()
 					->enableAnnotationMapping()
+					->addDefaultDoctrineAnnotationReader()
 					->getValidator()
 			);
 		}

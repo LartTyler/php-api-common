@@ -5,7 +5,7 @@
 		/**
 		 * @var string
 		 */
-		protected $code;
+		protected string $code;
 
 		/**
 		 * @var string

@@ -44,7 +44,7 @@
 		/**
 		 * @var string
 		 */
-		protected $entityClass;
+		protected string $entityClass;
 
 		/**
 		 * @var PayloadDecoderInterface
@@ -309,7 +309,7 @@
 		 *
 		 * @return Response
 		 */
-		protected function respond(Request $request, $data): Response {
+		protected function respond(Request $request, mixed $data): Response {
 			if ($data instanceof Response)
 				return $data;
 			else if ($data instanceof ApiErrorInterface || $data === null)

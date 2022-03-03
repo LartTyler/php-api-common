@@ -16,28 +16,29 @@
 		}
 	},
 	"require": {
-		"php": ">=7.4",
+		"php": ">=8.0.2",
 		"ext-json": "*",
-		"symfony/serializer": "^4.0|^5.0",
-		"symfony/http-foundation": "^4.0|^5.0",
-		"symfony/event-dispatcher-contracts": "^2.0"
+		"symfony/serializer": "^6.0"
 	},
 	"require-dev": {
-		"symfony/validator": "^5.0",
+		"symfony/framework-bundle": "^6.0",
+		"symfony/event-dispatcher-contracts": "^3.0",
+		"symfony/validator": "^6.0",
 		"lexik/jwt-authentication-bundle": "^2.6",
 		"dbstudios/entity-transformers": "^1.3",
 		"dbstudios/doctrine-entities": "^1.0",
 		"doctrine/orm": "^2.7",
 		"dbstudios/doctrine-query-document": "^1.1",
-		"symfony/event-dispatcher": "^5.0",
+		"symfony/event-dispatcher": "^6.0",
 		"phpunit/phpunit": "^9.5",
 		"doctrine/annotations": "^1.12",
-		"doctrine/cache": "^1.10"
+		"symfony/cache": "^6.0"
 	},
 	"suggest": {
 		"symfony/validator": "If you want to use the ValidationFailedError API error class",
 		"dbstudios/doctrine-query-document": "If you want to use the Doctrine Query Document errors or the AbstractApiController",
 		"lexik/jwt-authentication-bundle": "If you want to use the lexik/jwt-authentication-bundle support code",
+		"symfony/framework-bundle": "If you want to use the AbstractApiController class",
 		"dbstudios/entity-transformers": "If you want to use the AbstractApiController",
 		"dbstudios/doctrine-entities": "If you want to use the AbstractApiController",
 		"doctrine/orm": "If you want to use the AbstractApiController",

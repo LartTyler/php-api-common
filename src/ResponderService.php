@@ -71,7 +71,7 @@
 		 *
 		 */
 		public function createResponse(
-			$data = null,
+			mixed $data = null,
 			?int $status = null,
 			array $headers = [],
 			array $context = []
