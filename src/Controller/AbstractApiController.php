@@ -315,14 +315,15 @@
 			else if ($data instanceof ApiErrorInterface || $data === null)
 				return $this->responder->createErrorResponse($data ?? new NotFoundError());
 
-			$fields = $request->query->get('p', []);
+			$fields = $request->query->get('p');
 
 			if ($fields) {
 				$fields = @json_decode($fields, true);
 
 				if (json_last_error() !== JSON_ERROR_NONE)
 					return $this->responder->createErrorResponse(new ProjectionSyntaxError());
-			}
+			} else
+				$fields = [];
 
 			$projection = Projection::fromFields($fields);
 
