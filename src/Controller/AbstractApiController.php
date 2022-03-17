@@ -16,6 +16,8 @@
 	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityDeleteEvent;
 	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityPostCloneEvent;
 	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityPostCreateEvent;
+	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityPostDeleteEvent;
+	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityPostUpdateEvent;
 	use DaybreakStudios\RestApiCommon\Event\Events\ApiController\ApiEntityUpdateEvent;
 	use DaybreakStudios\RestApiCommon\Exceptions\ApiErrorException;
 	use DaybreakStudios\RestApiCommon\Payload\DecoderIntent;
@@ -189,6 +191,14 @@
 
 			$this->entityManager->flush();
 
+			if ($this->eventDispatcher !== null) {
+				$event = new ApiEntityPostUpdateEvent($entity, $payload);
+				$this->eventDispatcher->dispatch($event);
+
+				if ($event->getShouldFlush())
+					$this->entityManager->flush();
+			}
+
 			return $this->respond($request, $entity);
 		}
 
@@ -256,6 +266,14 @@
 			}
 
 			$this->entityManager->flush();
+
+			if ($this->eventDispatcher !== null) {
+				$event = new ApiEntityPostDeleteEvent($entity);
+				$this->eventDispatcher->dispatch($event);
+
+				if ($event->getShouldFlush())
+					$this->entityManager->flush();
+			}
 
 			return new Response('', Response::HTTP_NO_CONTENT);
 		}
