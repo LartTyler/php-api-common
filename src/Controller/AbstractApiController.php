@@ -2,6 +2,7 @@
 	namespace DaybreakStudios\RestApiCommon\Controller;
 
 	use DaybreakStudios\DoctrineQueryDocument\Projection\Projection;
+	use DaybreakStudios\DoctrineQueryDocument\Projection\ProjectionInterface;
 	use DaybreakStudios\DoctrineQueryDocument\QueryManagerInterface;
 	use DaybreakStudios\RestApiCommon\Error\ApiErrorInterface;
 	use DaybreakStudios\RestApiCommon\Error\Errors\ApiController\GenericApiError;
@@ -353,13 +354,7 @@
 			return $this->responder->createResponse($data);
 		}
 
-		/**
-		 * @param array      $data
-		 * @param Projection $projection
-		 *
-		 * @return array
-		 */
-		protected function normalizeMany(array $data, Projection $projection): array {
+		protected function normalizeMany(array $data, ProjectionInterface $projection): array {
 			$normalized = [];
 
 			foreach ($data as $item) {
@@ -389,11 +384,5 @@
 			return $this->respond($request, $error);
 		}
 
-		/**
-		 * @param EntityInterface $entity
-		 * @param Projection      $projection
-		 *
-		 * @return array
-		 */
-		protected abstract function normalizeOne(EntityInterface $entity, Projection $projection): array;
+		protected abstract function normalizeOne(EntityInterface $entity, ProjectionInterface $projection): array;
 	}

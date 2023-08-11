@@ -232,16 +232,16 @@
         },
         {
             "name": "dbstudios/doctrine-query-document",
-            "version": "1.5.1",
+            "version": "1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LartTyler/doctrine-query-document.git",
-                "reference": "6f2634ee9ac04d61b148ceffc03fc65441808398"
+                "reference": "e26edd313168ccdf7d131b52982c8cdc5cdd6101"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LartTyler/doctrine-query-document/zipball/6f2634ee9ac04d61b148ceffc03fc65441808398",
-                "reference": "6f2634ee9ac04d61b148ceffc03fc65441808398",
+                "url": "https://api.github.com/repos/LartTyler/doctrine-query-document/zipball/e26edd313168ccdf7d131b52982c8cdc5cdd6101",
+                "reference": "e26edd313168ccdf7d131b52982c8cdc5cdd6101",
                 "shasum": ""
             },
             "require": {
@@ -274,9 +274,9 @@
             "description": "Allows building Doctrine queries using MongoDB-style query documents",
             "support": {
                 "issues": "https://github.com/LartTyler/doctrine-query-document/issues",
-                "source": "https://github.com/LartTyler/doctrine-query-document/tree/1.5.1"
+                "source": "https://github.com/LartTyler/doctrine-query-document/tree/1.8.0"
             },
-            "time": "2021-06-18T15:56:42+00:00"
+            "time": "2023-08-11T18:58:03+00:00"
         },
         {
             "name": "dbstudios/entity-transformers",
@@ -6737,5 +6737,5 @@
         "ext-json": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
